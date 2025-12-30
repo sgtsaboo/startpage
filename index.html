@@ -23,9 +23,9 @@
         .theme-sunset { --bg: #2d1b2d; --text: #fff0f0; --accent: #ff7e5f; --card-bg: #3d2b3d; --button-bg: #4d3b4d; --button-hover: #feb47b; --input-bg: #3d2b3d; --border: #ff7e5f; }
 
         * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; }
         header { margin-top: 40px; position: relative; width: 90%; max-width: 1400px; text-align: center; }
-        .settings-btn { position: absolute; top: 0; right: 0; background: var(--button-bg); border: none; color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: all 0.15s ease; }
+        .settings-btn { position: absolute; top: 0; right: 0; background: var(--button-bg); border: none; color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
         .settings-btn:hover { background: var(--accent); color: #121212; }
         #clock { font-size: 4.5rem; font-weight: bold; margin: 20px 0; letter-spacing: 2px; }
         #date { font-size: 1.6rem; margin-bottom: 30px; opacity: 0.9; }
@@ -39,7 +39,7 @@
         .group-card { background: var(--card-bg); border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
         .group-title { color: var(--accent); font-size: 1.1rem; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
         .links-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .link-button { aspect-ratio: 1/1; background: var(--button-bg); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text); padding: 10px; transition: 0.2s; }
+        .link-button { aspect-ratio: 1/1; background: var(--button-bg); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: inherit; }
         .link-button:hover { background: var(--button-hover); color: #121212; transform: translateY(-3px); }
         .link-icon { width: 24px; height: 24px; margin-bottom: 5px; object-fit: contain; }
 
@@ -73,10 +73,20 @@
         .btn-danger { background: #ff6b6b; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
         .btn-add { background: var(--accent); color: #121212; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
 
-        .theme-card { border: 1px solid var(--border); padding: 10px; border-radius: 8px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; background: rgba(255,255,255,0.02); margin-bottom: 10px; }
-        .theme-previews { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        .color-swatch { width: 28px; height: 20px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.2); }
+        /* Compact theme editing */
+        .theme-compact-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; background: rgba(255,255,255,0.01); }
+        .theme-compact-row input.theme-name { width: 28%; padding: 6px 8px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); border-radius: 6px; }
+        .theme-previews-compact { display: flex; gap: 6px; align-items: center; flex: 1; }
+        .compact-swatch { width: 22px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.25); }
+        .theme-controls-compact { display: flex; gap: 6px; }
+        .theme-edit-panel { margin-top: 6px; padding: 8px; display: none; gap: 6px; border-radius: 6px; border-top: 1px dashed var(--border); }
+        .theme-edit-panel.active { display: flex; flex-wrap: wrap; }
+        .theme-edit-panel input[type=color] { width: 36px; height: 28px; padding: 0; border: none; background: transparent; cursor: pointer; }
+        .theme-edit-label { font-size: 0.75rem; color: var(--text); opacity: 0.85; margin-right: 6px; }
+        .small-btn { padding: 6px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid var(--border); background: var(--button-bg); color: var(--text); cursor: pointer; }
+        .small-btn.primary { background: var(--accent); color: #121212; border-color: transparent; }
 
+        .theme-card { border: 1px solid var(--border); padding: 10px; border-radius: 8px; display: block; gap: 10px; align-items: center; background: rgba(255,255,255,0.02); }
         @media (max-width: 1100px) { .container { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -126,7 +136,7 @@
                 
                 <div id="local-tasks-ui">
                     <div style="display:flex; gap:10px; margin-bottom:15px">
-                        <input type="text" id="task-input" placeholder="Add task..." style="flex:1; padding:8px; border-radius:5px; border:1px solid var(--border); background:var(--input-bg); color:var(--text)" />
+                        <input type="text" id="task-input" placeholder="Add task..." style="flex:1; padding:8px; border-radius:5px; border:1px solid var(--border); background:var(--input-bg); color:var(--text);" />
                         <button class="weather-tab" id="add-task-btn">Add</button>
                     </div>
                     <div id="tasks-list"></div>
@@ -152,13 +162,20 @@
             </div>
 
             <div class="form-group">
+                <label>Search Engine</label>
+                <select id="search-engine-select"></select>
+                <input type="text" id="search-engine-custom" placeholder="Custom search URL template (use {q})" style="display:none; margin-top:8px;" />
+                <small style="display:block; margin-top:6px; color:var(--text); opacity:0.8">Choose which search engine the search box uses. For custom, enter a URL template using {q} for the query.</small>
+            </div>
+
+            <div class="form-group">
                 <label>Manage Themes</label>
                 <div id="themes-config"></div>
                 <div style="display:flex; gap:10px; margin-top:8px;">
                     <button class="btn-add" id="add-theme-btn">+ Add Theme</button>
                     <button id="reset-themes-btn" class="weather-tab">Reset Defaults</button>
                 </div>
-                <small style="display:block; margin-top:8px; color:var(--text); opacity:0.8">Edit colors for each theme, set the active theme using the selector above, and delete themes you don't want. At least one theme must remain.</small>
+                <small style="display:block; margin-top:8px; color:var(--text); opacity:0.8">Edit colors for each theme, set the active theme using the selector above, and delete themes you don't want.</small>
             </div>
 
             <!-- IMPORT / EXPORT SETTINGS -->
@@ -169,7 +186,7 @@
                     <button class="weather-tab" id="import-settings-btn">Import Settings</button>
                     <input type="file" id="import-file-input" accept=".json,application/json" style="display:none" />
                 </div>
-                <small style="display:block; margin-top:8px; color:var(--text); opacity:0.8">Export saves your configuration (themes, groups, weather locations, tasks). Import will replace current settings. A preview will be applied immediately.</small>
+                <small style="display:block; margin-top:8px; color:var(--text); opacity:0.8">Export saves your configuration (themes, groups, weather locations, tasks). Import will replace current settings.</small>
             </div>
 
             <div class="form-group">
@@ -191,6 +208,14 @@
     </div>
 
     <script>
+        // Search engines definitions
+        const SEARCH_ENGINES = [
+            { id: 'google', name: 'Google', template: 'https://www.google.com/search?q={q}', placeholder: 'Search Google...' },
+            { id: 'duckduckgo', name: 'DuckDuckGo', template: 'https://duckduckgo.com/?q={q}', placeholder: 'Search DuckDuckGo...' },
+            { id: 'bing', name: 'Bing', template: 'https://www.bing.com/search?q={q}', placeholder: 'Search Bing...' },
+            { id: 'startpage', name: 'Startpage', template: 'https://www.startpage.com/do/search?query={q}', placeholder: 'Search Startpage...' }
+        ];
+
         // Default themes (kept consistent with static CSS defaults)
         const DEFAULT_THEMES = [
             {
@@ -238,7 +263,10 @@
                     { name: 'GitHub', url: 'https://github.com', icon: 'https://www.google.com/s2/favicons?domain=github.com&sz=64' },
                     { name: 'Gmail', url: 'https://gmail.com', icon: 'https://www.google.com/s2/favicons?domain=gmail.com&sz=64' }
                 ]}
-            ]
+            ],
+            // new: search engine id and custom template
+            searchEngine: 'google',
+            customSearchTemplate: ''
         };
 
         let tasks = [];
@@ -255,6 +283,8 @@
                     if (parsed.weatherLocations) config.weatherLocations = parsed.weatherLocations;
                     if (typeof parsed.activeWeatherIdx === 'number') config.activeWeatherIdx = parsed.activeWeatherIdx;
                     if (parsed.groups) config.groups = parsed.groups;
+                    if (parsed.searchEngine) config.searchEngine = parsed.searchEngine;
+                    if (parsed.customSearchTemplate) config.customSearchTemplate = parsed.customSearchTemplate;
                 } catch (e) { console.error('Failed parsing config, using defaults', e); }
             }
             const savedTasks = localStorage.getItem('dash_v4_tasks');
@@ -285,6 +315,53 @@
             // update theme-select UI if present
             const sel = document.getElementById('theme-select');
             if (sel) sel.value = themeId;
+        }
+
+        function applySearchEngineUI() {
+            // set search placeholder and custom input visibility
+            const searchBox = document.getElementById('search-box');
+            const engine = SEARCH_ENGINES.find(e => e.id === config.searchEngine);
+            if (engine) {
+                searchBox.placeholder = engine.placeholder || 'Search...';
+            } else if (config.searchEngine === 'custom' && config.customSearchTemplate) {
+                // try to derive a placeholder from custom template
+                try {
+                    // get hostname if template looks like a URL
+                    const protoRemoved = config.customSearchTemplate.replace('{q}', '');
+                    const u = new URL(protoRemoved);
+                    searchBox.placeholder = `Search ${u.hostname}`;
+                } catch (err) {
+                    searchBox.placeholder = 'Search...';
+                }
+            } else {
+                searchBox.placeholder = 'Search...';
+            }
+
+            const sel = document.getElementById('search-engine-select');
+            if (sel) sel.value = config.searchEngine || 'google';
+            const customInput = document.getElementById('search-engine-custom');
+            if (customInput) {
+                if (config.searchEngine === 'custom') {
+                    customInput.style.display = 'block';
+                    customInput.value = config.customSearchTemplate || '';
+                } else {
+                    customInput.style.display = 'none';
+                }
+            }
+        }
+
+        function performSearch(query) {
+            if (!query) return;
+            let url = '';
+            const engine = SEARCH_ENGINES.find(e => e.id === config.searchEngine);
+            if (engine) {
+                url = engine.template.replace('{q}', encodeURIComponent(query));
+            } else if (config.searchEngine === 'custom' && config.customSearchTemplate) {
+                url = config.customSearchTemplate.replace('{q}', encodeURIComponent(query));
+            } else {
+                url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            }
+            window.location.href = url;
         }
 
         function updateClock() {
@@ -400,126 +477,126 @@
             });
         }
 
-        // Settings UI: Themes
+        // Compact theme rendering
         function renderThemeControls() {
             const container = document.getElementById('themes-config');
             container.innerHTML = '';
+            const varKeys = ['--bg','--text','--accent','--card-bg','--button-bg','--button-hover','--input-bg','--border'];
+
             config.themes.forEach((theme, idx) => {
-                const card = document.createElement('div');
-                card.className = 'theme-card';
-                // name + preview
-                const left = document.createElement('div');
                 const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.style.gap = '8px';
-                row.style.alignItems = 'center';
+                row.className = 'theme-compact-row';
+                row.dataset.index = idx;
+
+                // Name input
                 const nameInput = document.createElement('input');
-                nameInput.value = theme.name || theme.id;
-                nameInput.style.width = '40%';
                 nameInput.className = 'theme-name';
+                nameInput.value = theme.name || theme.id;
+
                 // previews
                 const previews = document.createElement('div');
-                previews.className = 'theme-previews';
-                ['--bg','--text','--accent','--card-bg','--button-bg','--button-hover','--input-bg','--border'].forEach(v => {
+                previews.className = 'theme-previews-compact';
+                varKeys.forEach(k => {
                     const sw = document.createElement('div');
-                    sw.className = 'color-swatch';
-                    sw.style.background = theme.vars[v] || '#000';
+                    sw.className = 'compact-swatch';
+                    sw.style.background = theme.vars[k] || '#000';
+                    sw.title = k.replace('--','');
                     previews.appendChild(sw);
                 });
-                row.appendChild(nameInput);
-                row.appendChild(previews);
-                left.appendChild(row);
 
-                // color inputs area collapsed by default
-                const colorsArea = document.createElement('div');
-                colorsArea.style.marginTop = '8px';
-                colorsArea.style.display = 'grid';
-                colorsArea.style.gridTemplateColumns = 'repeat(2, 1fr)';
-                colorsArea.style.gap = '6px';
-                const varKeys = ['--bg','--text','--accent','--card-bg','--button-bg','--button-hover','--input-bg','--border'];
-                varKeys.forEach(k => {
-                    const fld = document.createElement('div');
-                    fld.style.display = 'flex';
-                    fld.style.gap = '6px';
-                    fld.style.alignItems = 'center';
-                    const label = document.createElement('label');
-                    label.style.width = '90px';
-                    label.style.color = 'var(--text)';
-                    label.style.opacity = '0.9';
-                    label.textContent = k.replace('--','');
-                    const input = document.createElement('input');
-                    input.type = 'color';
-                    // ensure hex fallback if value is rgb or named color
-                    const v = theme.vars[k] || '#000000';
-                    input.value = toHex(v);
-                    input.dataset.var = k;
-                    input.className = 'theme-color';
-                    input.style.width = '56px';
-                    fld.appendChild(label);
-                    fld.appendChild(input);
-                    colorsArea.appendChild(fld);
-                });
-                left.appendChild(colorsArea);
-
-                // controls on right
-                const right = document.createElement('div');
-                right.style.display = 'flex';
-                right.style.flexDirection = 'column';
-                right.style.gap = '8px';
-                right.style.alignItems = 'flex-end';
+                // controls
+                const controls = document.createElement('div');
+                controls.className = 'theme-controls-compact';
 
                 const applyBtn = document.createElement('button');
-                applyBtn.className = 'weather-tab';
+                applyBtn.className = 'small-btn';
                 applyBtn.textContent = (theme.id === config.theme) ? 'Active' : 'Apply';
                 applyBtn.onclick = () => { applyTheme(theme.id); saveData(); renderThemeControls(); };
 
+                const editBtn = document.createElement('button');
+                editBtn.className = 'small-btn';
+                editBtn.textContent = 'Edit';
+
                 const delBtn = document.createElement('button');
-                delBtn.className = 'btn-danger';
+                delBtn.className = 'small-btn';
                 delBtn.textContent = 'Delete';
                 delBtn.onclick = () => {
-                    if (config.themes.length <= 1) {
-                        alert('At least one theme must remain.');
-                        return;
-                    }
+                    if (config.themes.length <= 1) { alert('At least one theme must remain.'); return; }
                     if (!confirm(`Delete theme "${theme.name}"?`)) return;
                     config.themes.splice(idx,1);
-                    // if deleted theme was active, set new active
                     if (config.theme === theme.id) config.theme = config.themes[0].id;
                     renderThemeControls();
                 };
 
-                right.appendChild(applyBtn);
-                right.appendChild(delBtn);
+                controls.appendChild(applyBtn);
+                controls.appendChild(editBtn);
+                controls.appendChild(delBtn);
 
-                card.appendChild(left);
-                card.appendChild(right);
-                container.appendChild(card);
+                row.appendChild(nameInput);
+                row.appendChild(previews);
+                row.appendChild(controls);
 
-                // events to update preview when name or color changed
-                nameInput.oninput = (e) => { theme.name = e.target.value; renderThemeSelect(); saveData(); };
-                colorsArea.querySelectorAll('.theme-color').forEach(inp => {
-                    inp.oninput = (e) => {
+                // expanded edit panel
+                const panel = document.createElement('div');
+                panel.className = 'theme-edit-panel';
+
+                varKeys.forEach(k => {
+                    const wrap = document.createElement('div');
+                    wrap.style.display = 'flex';
+                    wrap.style.alignItems = 'center';
+                    wrap.style.gap = '6px';
+                    const label = document.createElement('span');
+                    label.className = 'theme-edit-label';
+                    label.textContent = k.replace('--','');
+                    const input = document.createElement('input');
+                    input.type = 'color';
+                    input.dataset.var = k;
+                    input.value = toHex(theme.vars[k] || '#000000');
+                    input.title = k;
+                    input.oninput = (e) => {
                         const varName = e.target.dataset.var;
                         theme.vars[varName] = e.target.value;
-                        // update preview square
+                        // update preview swatch
                         const swIndex = varKeys.indexOf(varName);
                         if (swIndex >= 0) previews.children[swIndex].style.background = e.target.value;
-                        // if this is active theme, apply live
+                        // live apply if active
                         if (config.theme === theme.id) applyTheme(theme.id);
+                        // persist immediately so edits to defaults stick
+                        saveData();
                     };
+                    wrap.appendChild(label);
+                    wrap.appendChild(input);
+                    panel.appendChild(wrap);
                 });
+
+                // wire edit button AFTER panel exists
+                editBtn.onclick = () => {
+                    panel.classList.toggle('active');
+                    // update color inputs with latest
+                    panel.querySelectorAll('input[type=color]').forEach(input => {
+                        const varName = input.dataset.var;
+                        input.value = toHex(theme.vars[varName] || '#000000');
+                    });
+                };
+
+                // append panel and row to container
+                container.appendChild(row);
+                container.appendChild(panel);
+
+                // events for name change
+                nameInput.oninput = (e) => {
+                    theme.name = e.target.value;
+                    renderThemeSelect();
+                    saveData();
+                };
             });
         }
 
         function toHex(color) {
-            // If already a hex return as-is. If rgb(...) convert to hex. Otherwise try to return the input or fallback.
             if (!color) return '#000000';
             color = color.trim();
             if (color.startsWith('#')) {
-                if (color.length === 4) {
-                    // expand shorthand #abc -> #aabbcc
-                    return '#' + color.slice(1).split('').map(c => c + c).join('');
-                }
+                if (color.length === 4) return '#' + color.slice(1).split('').map(c => c + c).join('');
                 return color;
             }
             if (color.startsWith('rgb')) {
@@ -527,13 +604,12 @@
                 const hex = nums.slice(0,3).map(n => n.toString(16).padStart(2,'0')).join('');
                 return '#'+hex;
             }
-            // named color fallback: create temporary element to compute
             const ctx = document.createElement('div');
             ctx.style.color = color;
             document.body.appendChild(ctx);
             const cs = getComputedStyle(ctx).color;
             document.body.removeChild(ctx);
-            if (cs.startsWith('rgb')) {
+            if (cs && cs.startsWith('rgb')) {
                 const nums = cs.match(/\d+/g).map(Number);
                 const hex = nums.slice(0,3).map(n => n.toString(16).padStart(2,'0')).join('');
                 return '#'+hex;
@@ -553,10 +629,54 @@
             sel.value = config.theme;
         }
 
+        function renderSearchEngineSelect() {
+            const sel = document.getElementById('search-engine-select');
+            if (!sel) return;
+            sel.innerHTML = '';
+            SEARCH_ENGINES.forEach(e => {
+                const opt = document.createElement('option');
+                opt.value = e.id;
+                opt.textContent = e.name;
+                sel.appendChild(opt);
+            });
+            const customOpt = document.createElement('option');
+            customOpt.value = 'custom';
+            customOpt.textContent = 'Custom...';
+            sel.appendChild(customOpt);
+
+            sel.value = config.searchEngine || 'google';
+
+            const customInput = document.getElementById('search-engine-custom');
+            if (config.searchEngine === 'custom') {
+                if (customInput) { customInput.style.display = 'block'; customInput.value = config.customSearchTemplate || ''; }
+            } else {
+                if (customInput) customInput.style.display = 'none';
+            }
+
+            sel.onchange = (e) => {
+                const val = e.target.value;
+                config.searchEngine = val;
+                if (val === 'custom') {
+                    if (customInput) { customInput.style.display = 'block'; customInput.focus(); }
+                } else {
+                    if (customInput) customInput.style.display = 'none';
+                }
+                applySearchEngineUI();
+            };
+
+            if (customInput) {
+                customInput.oninput = (e) => {
+                    config.customSearchTemplate = e.target.value;
+                    applySearchEngineUI();
+                };
+            }
+        }
+
         function openSettings() {
             // populate theme-select and themes-config
             renderThemeSelect();
             renderThemeControls();
+            renderSearchEngineSelect();
 
             // weather configs
             const weatherDiv = document.getElementById('weather-configs');
@@ -626,6 +746,16 @@
             const sel = document.getElementById('theme-select');
             if (sel) applyTheme(sel.value);
 
+            // search engine selection
+            const selEngine = document.getElementById('search-engine-select');
+            if (selEngine) {
+                config.searchEngine = selEngine.value;
+                if (config.searchEngine === 'custom') {
+                    const customInput = document.getElementById('search-engine-custom');
+                    config.customSearchTemplate = customInput ? customInput.value : '';
+                }
+            }
+
             // weather locations
             config.weatherLocations = [];
             document.querySelectorAll('#weather-configs .link-edit-row').forEach(row => {
@@ -658,6 +788,7 @@
             });
 
             applyTheme(config.theme);
+            applySearchEngineUI();
             renderWeatherTabs();
             fetchWeather();
             renderPanels();
@@ -768,6 +899,7 @@
                     renderPanels();
                     renderCalendar();
                     renderTasks();
+                    applySearchEngineUI();
                     alert('Settings imported successfully.');
                     document.getElementById('settings-modal').classList.remove('active');
                 } catch (err) {
@@ -784,6 +916,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadData(); updateClock(); setInterval(updateClock, 1000); renderWeatherTabs(); fetchWeather(); renderPanels(); renderCalendar(); renderTasks();
             
+            // Ensure search engine UI is applied on load
+            applySearchEngineUI();
+
             // task mode
             const taskMode = document.getElementById('task-mode');
             const savedMode = localStorage.getItem('dash_v4_task_mode') || 'local';
@@ -813,8 +948,12 @@
                 const input = document.getElementById('task-input');
                 if (input.value.trim()) { tasks.push({ text: input.value.trim(), completed: false }); renderTasks(); saveData(); input.value = ''; }
             };
+
+            // search behavior: use performSearch which respects chosen engine
             document.getElementById('search-box').onkeypress = (e) => {
-                if (e.key === 'Enter' && e.target.value.trim()) window.location.href = `https://google.com/search?q=${encodeURIComponent(e.target.value.trim())}`;
+                if (e.key === 'Enter' && e.target.value.trim()) {
+                    performSearch(e.target.value.trim());
+                }
             };
 
             // theme controls
@@ -842,6 +981,51 @@
                     importInput.value = '';
                 }
             };
+
+            // render search engine select so settings modal shows a populated list when opened
+            renderSearchEngineSelect();
+
+            // Robust listener: persist color input edits even if underlying render function differs.
+            // Works by locating the theme row (data-index) adjacent to the color panel and updating config.
+            document.addEventListener('input', (e) => {
+              const target = e.target;
+              if (!(target && target.tagName === 'INPUT' && target.type === 'color')) return;
+
+              // Find the theme row and index. The compact UI places the .theme-compact-row immediately before its .theme-edit-panel
+              const panel = target.closest('.theme-edit-panel');
+              const row = panel ? panel.previousElementSibling : target.closest('.theme-compact-row');
+              if (!row) return;
+              const idxAttr = row.getAttribute('data-index');
+              if (idxAttr == null) return;
+              const idx = Number(idxAttr);
+              if (Number.isNaN(idx) || !config.themes || !config.themes[idx]) return;
+
+              // Var name and value
+              const varName = target.dataset.var;
+              if (!varName) return;
+              const val = target.value;
+
+              // Update model
+              config.themes[idx].vars = config.themes[idx].vars || {};
+              config.themes[idx].vars[varName] = val;
+
+              // Live-apply if this is the active theme
+              if (config.theme === config.themes[idx].id) applyTheme(config.themes[idx].id);
+
+              // Update preview swatch if present
+              const previews = row.querySelector('.theme-previews-compact');
+              if (previews) {
+                const varKeys = ['--bg','--text','--accent','--card-bg','--button-bg','--button-hover','--input-bg','--border'];
+                const pos = varKeys.indexOf(varName);
+                if (pos >= 0 && previews.children[pos]) previews.children[pos].style.background = val;
+              }
+
+              // Persist immediately so changes survive reloads
+              saveData();
+
+              // Update any UI that may depend on the CSS variables
+              renderPanels();
+            });
         });
     </script>
 </body>
