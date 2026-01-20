@@ -11,13 +11,13 @@ export const DEFAULT_SETTINGS = {
   themeColor: '#f97316',
   backgroundColor: '#020617',
   backgroundImage: '',
-  tileOpacity: 1.0,
+  tileOpacity: 0.8,
   timeFormat24h: true,
   openInNewTab: true,
   showWeather: true,
   weatherConfigs: [{ id: 'ny-weather', location: 'New York, NY', lat: 40.7128, lng: -74.0060 }],
   showNotes: true,
-  notesPosition: 'right',
+  notesPosition: 'left',
   weatherStyle: 'detailed',
   weatherUnit: 'imperial'
 };
