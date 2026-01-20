@@ -15,7 +15,7 @@ export const DEFAULT_SETTINGS = {
   timeFormat24h: true,
   openInNewTab: true,
   showWeather: true,
-  weatherConfigs: [{ id: 'ny-weather', location: 'New York, NY', lat: 40.7128, lng: -74.0060 }],
+  weatherConfigs: [{ id: 1768910640246, location: "Hanover, Pennsylvania", lat: 39.80066, lng: -76.98304 }],
   showNotes: true,
   notesPosition: 'left',
   weatherStyle: 'detailed',
