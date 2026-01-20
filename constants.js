@@ -11,13 +11,13 @@ export const DEFAULT_SETTINGS = {
   themeColor: '#f97316',
   backgroundColor: '#020617',
   backgroundImage: '',
-  tileOpacity: 0.8,
+  tileOpacity: 1.0,
   timeFormat24h: true,
   openInNewTab: true,
   showWeather: true,
   weatherConfigs: [{ id: 1768910640246, location: "Hanover, Pennsylvania", lat: 39.80066, lng: -76.98304 }],
   showNotes: true,
-  notesPosition: 'left',
+  notesPosition: 'right',
   weatherStyle: 'detailed',
   weatherUnit: 'imperial'
 };
