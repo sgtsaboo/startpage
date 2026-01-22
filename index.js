@@ -177,7 +177,7 @@ const renderNotesWidget = () => {
 const renderProviderDropdown = () => {
   const isDark = state.settings.theme === 'dark';
   return `
-    <div class="absolute top-full left-0 mt-3 w-56 border shadow-2xl rounded-xl py-2 z-[60] animate-zoom-in ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}">
+    <div class="border shadow-2xl rounded-xl py-2 animate-zoom-in ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}">
       ${SEARCH_PROVIDERS.map(p => `
         <button data-provider-id="${p.id}" class="provider-option w-full flex items-center gap-3 px-5 py-3 transition-colors ${state.settings.searchProvider === p.id ? 'text-theme font-bold' : (isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-gray-600 hover:bg-gray-50')}">
           <img src="${p.icon}" class="w-5 h-5" />
@@ -321,6 +321,11 @@ const attachAppEvents = () => {
         if (!dropdownEl) {
           dropdownEl = document.createElement('div');
           dropdownEl.setAttribute('data-provider-dropdown', '');
+          dropdownEl.style.position = 'absolute';
+          dropdownEl.style.top = '100%';
+          dropdownEl.style.left = '0';
+          dropdownEl.style.marginTop = '0.75rem';
+          dropdownEl.style.zIndex = '60';
           searchBarContainer.appendChild(dropdownEl);
         }
         if (state.isDropdownOpen) {
