@@ -53,7 +53,7 @@ const render = () => {
   document.documentElement.style.setProperty('--widget-opacity', state.settings.tileOpacity);
 
   const timeStr = state.currentTime.toLocaleTimeString([], { 
-    hour: '2-digit', minute: '2-digit', hour12: !state.settings.timeFormat24h 
+    hour: '2-digit', minute: '2-digit', second: '2-digit',hour12: !state.settings.timeFormat24h 
   });
   const dateStr = state.currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
