@@ -1,6 +1,6 @@
 import { createIcons, icons } from 'lucide';
 import Sortable from 'sortablejs';
-import { DEFAULT_SETTINGS, INITIAL_PAGES, INITIAL_TILES, SEARCH_PROVIDERS } from './constants.js';
+import { DEFAULT_SETTINGS, INITIAL_PAGES, INITIAL_TILES } from './constants.js';
 
 // --- Utilities ---
 const hexToRgb = (hex) => {
@@ -18,8 +18,7 @@ let state = {
   activePageId: localStorage.getItem('speeddial_active_page') || INITIAL_PAGES[0].id,
   weatherData: {},
   currentTime: new Date(),
-  calendarViewDate: new Date(),
-  isDropdownOpen: false
+  calendarViewDate: new Date()
 };
 
 const saveState = () => {
@@ -57,7 +56,6 @@ const render = () => {
   });
   const dateStr = state.currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
-  const currentProvider = SEARCH_PROVIDERS.find(p => p.id === state.settings.searchProvider) || SEARCH_PROVIDERS[0];
   const filteredTiles = state.tiles
     .filter(t => t.pageId === state.activePageId)
     .sort((a, b) => a.position - b.position);
@@ -70,7 +68,7 @@ const render = () => {
         
         <!-- Left Sidebar -->
         <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
-          <div class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? 'text-slate-100' : 'text-gray-900'}" data-time-display>
+          <div class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? 'text-slate-100' : 'text-gray-900'}">
             ${timeStr}
           </div>
           <div id="weather-list-left" class="w-full flex flex-col gap-4"></div>
@@ -79,23 +77,6 @@ const render = () => {
 
         <!-- Main Body -->
         <main class="flex flex-col items-center h-full overflow-y-auto no-scrollbar px-6 pt-12 pb-24 z-10">
-          <!-- Search Bar -->
-          <div class="w-full max-w-xl mb-12">
-            <div class="relative flex items-center shadow-2xl rounded-xl border p-1 pl-4 backdrop-blur-xl bg-widget ${isDark ? 'border-white/10' : 'border-black/5'}">
-              <button id="provider-toggle" class="flex items-center gap-2 pr-4 border-r ${isDark ? 'border-white/10 text-slate-400' : 'border-black/10 text-gray-500'}">
-                <img src="${currentProvider.icon}" class="w-4 h-4 rounded" />
-                <i data-lucide="chevron-down" size="14"></i>
-              </button>
-              
-              <input id="main-search" type="text" placeholder="Search with ${currentProvider.name}..." 
-                     class="flex-1 bg-transparent px-4 py-3 outline-none text-lg ${isDark ? 'text-slate-100' : 'text-gray-800'}" 
-                     style="pointer-events: auto; -webkit-user-select: text; user-select: text;" />
-              
-              <button id="search-submit" class="p-3 bg-theme text-white rounded-lg hover:opacity-90 shadow-lg shadow-theme/30 ml-2">
-                <i data-lucide="search" size="20"></i>
-              </button>
-            </div>
-          </div>
 
           <!-- Page Groups (Tabs) -->
           <nav id="group-tabs-nav" class="w-full flex justify-center mb-10">
@@ -171,20 +152,6 @@ const renderNotesWidget = () => {
         <i data-lucide="sticky-note" size="14"></i> Quick Notes
       </div>
       <textarea id="notes-input" class="w-full h-32 bg-transparent border-none outline-none resize-none text-xs leading-relaxed placeholder:opacity-30" placeholder="Jot something down...">${noteText}</textarea>
-    </div>
-  `;
-};
-
-const renderProviderDropdown = () => {
-  const isDark = state.settings.theme === 'dark';
-  return `
-    <div class="border shadow-2xl rounded-xl py-2 animate-zoom-in w-56 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}">
-      ${SEARCH_PROVIDERS.map(p => `
-        <button data-provider-id="${p.id}" class="provider-option w-full flex items-center gap-3 px-5 py-3 transition-colors ${state.settings.searchProvider === p.id ? 'text-theme font-bold' : (isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-gray-600 hover:bg-gray-50')}">
-          <img src="${p.icon}" class="w-5 h-5" />
-          <span>${p.name}</span>
-        </button>
-      `).join('')}
     </div>
   `;
 };
@@ -300,59 +267,6 @@ const fetchWeather = async () => {
 
 // --- Interactions ---
 const attachAppEvents = () => {
-  const input = document.getElementById('main-search');
-  const submit = document.getElementById('search-submit');
-  const doSearch = () => {
-    if (!input || !input.value.trim()) return;
-    const provider = SEARCH_PROVIDERS.find(p => p.id === state.settings.searchProvider);
-    const url = `${provider.url}${encodeURIComponent(input.value)}`;
-    if (state.settings.openInNewTab) window.open(url, '_blank'); else window.location.href = url;
-  };
-  if (submit) submit.onclick = doSearch;
-  if (input) {
-    input.onkeydown = (e) => e.key === 'Enter' && doSearch();
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') doSearch();
-    });
-  }
-
-  const pToggle = document.getElementById('provider-toggle');
-  if (pToggle) {
-    pToggle.onclick = (e) => { 
-      e.stopPropagation(); 
-      state.isDropdownOpen = !state.isDropdownOpen;
-      const searchBarOuter = pToggle.closest('.w-full.max-w-xl');
-      if (searchBarOuter) {
-        let dropdownEl = searchBarOuter.querySelector('[data-provider-dropdown]');
-        if (!dropdownEl) {
-          dropdownEl = document.createElement('div');
-          dropdownEl.setAttribute('data-provider-dropdown', '');
-          dropdownEl.style.position = 'absolute';
-          dropdownEl.style.top = 'calc(100% + 0.75rem)';
-          dropdownEl.style.left = '50%';
-          dropdownEl.style.transform = 'translateX(-50%)';
-          dropdownEl.style.zIndex = '1000';
-          dropdownEl.style.pointerEvents = 'auto';
-          searchBarOuter.style.position = 'relative';
-          searchBarOuter.appendChild(dropdownEl);
-        }
-        if (state.isDropdownOpen) {
-          dropdownEl.innerHTML = renderProviderDropdown();
-          createIcons({ icons });
-          attachProviderOptions();
-        } else {
-          dropdownEl.innerHTML = '';
-        }
-      }
-    };
-  }
-  const attachProviderOptions = () => {
-    document.querySelectorAll('.provider-option').forEach(opt => {
-      opt.onclick = () => { state.settings.searchProvider = opt.dataset.providerId; state.isDropdownOpen = false; saveState(); render(); };
-    });
-  };
-  attachProviderOptions();
-
   document.querySelectorAll('.group-tab').forEach(tab => {
     tab.onclick = () => { state.activePageId = tab.dataset.pageId; saveState(); render(); };
   });
@@ -869,15 +783,5 @@ const attachSettingsEvents = () => {
 };
 
 // --- Lifecycle ---
-const updateClock = () => {
-  state.currentTime = new Date();
-  const timeStr = state.currentTime.toLocaleTimeString([], { 
-    hour: '2-digit', minute: '2-digit', hour12: !state.settings.timeFormat24h 
-  });
-  const timeElements = document.querySelectorAll('[data-time-display]');
-  timeElements.forEach(el => el.innerText = timeStr);
-};
-
-setInterval(updateClock, 1000);
-setInterval(fetchWeather, 600000); // Fetch weather every 10 minutes instead of every second
+setInterval(() => { state.currentTime = new Date(); renderCalendar(); }, 30000);
 render();
