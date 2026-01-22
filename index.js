@@ -93,8 +93,6 @@ const render = () => {
               <button id="search-submit" class="p-3 bg-theme text-white rounded-lg hover:opacity-90 shadow-lg shadow-theme/30 ml-2">
                 <i data-lucide="search" size="20"></i>
               </button>
-
-              ${state.isDropdownOpen ? renderProviderDropdown() : ''}
             </div>
           </div>
 
@@ -317,14 +315,20 @@ const attachAppEvents = () => {
     pToggle.onclick = (e) => { 
       e.stopPropagation(); 
       state.isDropdownOpen = !state.isDropdownOpen;
-      const dropdown = document.querySelector('[data-provider-id]')?.parentElement;
-      if (dropdown) {
+      const searchBarContainer = pToggle.closest('.relative');
+      if (searchBarContainer) {
+        let dropdownEl = searchBarContainer.querySelector('[data-provider-dropdown]');
+        if (!dropdownEl) {
+          dropdownEl = document.createElement('div');
+          dropdownEl.setAttribute('data-provider-dropdown', '');
+          searchBarContainer.appendChild(dropdownEl);
+        }
         if (state.isDropdownOpen) {
-          dropdown.innerHTML = renderProviderDropdown();
+          dropdownEl.innerHTML = renderProviderDropdown();
           createIcons({ icons });
           attachProviderOptions();
         } else {
-          dropdown.innerHTML = '';
+          dropdownEl.innerHTML = '';
         }
       }
     };
