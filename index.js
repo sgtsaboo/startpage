@@ -834,5 +834,5 @@ const attachSettingsEvents = () => {
 };
 
 // --- Lifecycle ---
-setInterval(() => { state.currentTime = new Date(); renderCalendar(); }, 30000);
+setInterval(() => { state.currentTime = new Date(); render(); }, 1000);
 render();
