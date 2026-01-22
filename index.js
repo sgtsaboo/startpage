@@ -88,7 +88,8 @@ const render = () => {
               </button>
               
               <input id="main-search" type="text" placeholder="Search with ${currentProvider.name}..." 
-                     class="flex-1 bg-transparent px-4 py-3 outline-none text-lg ${isDark ? 'text-slate-100' : 'text-gray-800'}" />
+                     class="flex-1 bg-transparent px-4 py-3 outline-none text-lg ${isDark ? 'text-slate-100' : 'text-gray-800'}" 
+                     style="pointer-events: auto; -webkit-user-select: text; user-select: text;" />
               
               <button id="search-submit" class="p-3 bg-theme text-white rounded-lg hover:opacity-90 shadow-lg shadow-theme/30 ml-2">
                 <i data-lucide="search" size="20"></i>
@@ -308,7 +309,12 @@ const attachAppEvents = () => {
     if (state.settings.openInNewTab) window.open(url, '_blank'); else window.location.href = url;
   };
   if (submit) submit.onclick = doSearch;
-  if (input) input.onkeydown = (e) => e.key === 'Enter' && doSearch();
+  if (input) {
+    input.onkeydown = (e) => e.key === 'Enter' && doSearch();
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSearch();
+    });
+  }
 
   const pToggle = document.getElementById('provider-toggle');
   if (pToggle) {
