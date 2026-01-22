@@ -834,5 +834,15 @@ const attachSettingsEvents = () => {
 };
 
 // --- Lifecycle ---
-setInterval(() => { state.currentTime = new Date(); render(); }, 1000);
+const updateClock = () => {
+  state.currentTime = new Date();
+  const timeStr = state.currentTime.toLocaleTimeString([], { 
+    hour: '2-digit', minute: '2-digit', hour12: !state.settings.timeFormat24h 
+  });
+  const timeElements = document.querySelectorAll('[data-time-display]');
+  timeElements.forEach(el => el.innerText = timeStr);
+};
+
+setInterval(updateClock, 1000);
+setInterval(fetchWeather, 600000); // Fetch weather every 10 minutes instead of every second
 render();
