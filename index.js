@@ -53,7 +53,7 @@ const render = () => {
   document.documentElement.style.setProperty('--widget-opacity', state.settings.tileOpacity);
 
   const timeStr = state.currentTime.toLocaleTimeString([], { 
-    hour: '2-digit', minute: '2-digit', second: '2-digit',hour12: !state.settings.timeFormat24h 
+    hour: '2-digit', minute: '2-digit', hour12: !state.settings.timeFormat24h 
   });
   const dateStr = state.currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
@@ -70,7 +70,7 @@ const render = () => {
         
         <!-- Left Sidebar -->
         <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
-          <div class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? 'text-slate-100' : 'text-gray-900'}">
+          <div class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? 'text-slate-100' : 'text-gray-900'}" data-time-display>
             ${timeStr}
           </div>
           <div id="weather-list-left" class="w-full flex flex-col gap-4"></div>
@@ -313,10 +313,28 @@ const attachAppEvents = () => {
   if (input) input.onkeydown = (e) => e.key === 'Enter' && doSearch();
 
   const pToggle = document.getElementById('provider-toggle');
-  if (pToggle) pToggle.onclick = (e) => { e.stopPropagation(); state.isDropdownOpen = !state.isDropdownOpen; render(); };
-  document.querySelectorAll('.provider-option').forEach(opt => {
-    opt.onclick = () => { state.settings.searchProvider = opt.dataset.providerId; state.isDropdownOpen = false; saveState(); render(); };
-  });
+  if (pToggle) {
+    pToggle.onclick = (e) => { 
+      e.stopPropagation(); 
+      state.isDropdownOpen = !state.isDropdownOpen;
+      const dropdown = document.querySelector('[data-provider-id]')?.parentElement;
+      if (dropdown) {
+        if (state.isDropdownOpen) {
+          dropdown.innerHTML = renderProviderDropdown();
+          createIcons({ icons });
+          attachProviderOptions();
+        } else {
+          dropdown.innerHTML = '';
+        }
+      }
+    };
+  }
+  const attachProviderOptions = () => {
+    document.querySelectorAll('.provider-option').forEach(opt => {
+      opt.onclick = () => { state.settings.searchProvider = opt.dataset.providerId; state.isDropdownOpen = false; saveState(); render(); };
+    });
+  };
+  attachProviderOptions();
 
   document.querySelectorAll('.group-tab').forEach(tab => {
     tab.onclick = () => { state.activePageId = tab.dataset.pageId; saveState(); render(); };
