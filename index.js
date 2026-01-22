@@ -177,7 +177,7 @@ const renderNotesWidget = () => {
 const renderProviderDropdown = () => {
   const isDark = state.settings.theme === 'dark';
   return `
-    <div class="border shadow-2xl rounded-xl py-2 animate-zoom-in ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}">
+    <div class="border shadow-2xl rounded-xl py-2 animate-zoom-in w-56 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-100'}">
       ${SEARCH_PROVIDERS.map(p => `
         <button data-provider-id="${p.id}" class="provider-option w-full flex items-center gap-3 px-5 py-3 transition-colors ${state.settings.searchProvider === p.id ? 'text-theme font-bold' : (isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-gray-600 hover:bg-gray-50')}">
           <img src="${p.icon}" class="w-5 h-5" />
@@ -315,18 +315,20 @@ const attachAppEvents = () => {
     pToggle.onclick = (e) => { 
       e.stopPropagation(); 
       state.isDropdownOpen = !state.isDropdownOpen;
-      const searchBarContainer = pToggle.closest('.relative');
-      if (searchBarContainer) {
-        let dropdownEl = searchBarContainer.querySelector('[data-provider-dropdown]');
+      const searchBarOuter = pToggle.closest('.w-full.max-w-xl');
+      if (searchBarOuter) {
+        let dropdownEl = searchBarOuter.querySelector('[data-provider-dropdown]');
         if (!dropdownEl) {
           dropdownEl = document.createElement('div');
           dropdownEl.setAttribute('data-provider-dropdown', '');
           dropdownEl.style.position = 'absolute';
-          dropdownEl.style.top = '100%';
-          dropdownEl.style.left = '0';
-          dropdownEl.style.marginTop = '0.75rem';
-          dropdownEl.style.zIndex = '60';
-          searchBarContainer.appendChild(dropdownEl);
+          dropdownEl.style.top = 'calc(100% + 0.75rem)';
+          dropdownEl.style.left = '50%';
+          dropdownEl.style.transform = 'translateX(-50%)';
+          dropdownEl.style.zIndex = '1000';
+          dropdownEl.style.pointerEvents = 'auto';
+          searchBarOuter.style.position = 'relative';
+          searchBarOuter.appendChild(dropdownEl);
         }
         if (state.isDropdownOpen) {
           dropdownEl.innerHTML = renderProviderDropdown();
