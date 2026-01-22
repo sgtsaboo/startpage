@@ -1,12 +1,5 @@
-export const SEARCH_PROVIDERS = [
-  { id: 'google', name: 'Google', url: 'https://www.google.com/search?q=', icon: 'https://www.google.com/favicon.ico' },
-  { id: 'ddg', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', icon: 'https://duckduckgo.com/favicon.ico' },
-  { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=', icon: 'https://www.bing.com/favicon.ico' }
-];
-
 export const DEFAULT_SETTINGS = {
   cols: 4,
-  searchProvider: 'google',
   theme: 'dark',
   themeColor: '#f97316',
   backgroundColor: '#020617',
