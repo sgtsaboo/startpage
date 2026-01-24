@@ -82,11 +82,15 @@ const render = () => {
     minute: "2-digit",
     hour12: !state.settings.timeFormat24h,
   });
-  const dateStr = state.currentTime.toLocaleDateString([], {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
+
+const date = state.currentTime;
+
+const weekday = date.toLocaleDateString([], { weekday: "long" });
+const month = date.toLocaleDateString([], { month: "long" });
+const day = date.toLocaleDateString([], { day: "numeric" });
+
+// Join them with new lines
+const dateStr = `${weekday},\n ${month}\n${day}`;
 
   const filteredTiles = state.tiles
     .filter((t) => t.pageId === state.activePageId)
@@ -116,7 +120,7 @@ const render = () => {
               ${state.pages
                 .map(
                   (page) => `
-                <button data-page-id="${page.id}" class="group-tab px-4 py-3 text-sm font-bold transition-all relative ${state.activePageId === page.id ? "text-theme" : isDark ? "text-slate-500 hover:text-slate-200" : "text-gray-400 hover:text-gray-800"}">
+                <button data-page-id="${page.id}" class="group-tab px-4 py-3 text-sm font-bold transition-all relative ${state.activePageId === page.id ? "text-theme" : isDark ? "text-slate-200 hover:text-slate-500" : "text-gray-400 hover:text-gray-800"}">
                   ${page.name}
                   ${state.activePageId === page.id ? '<div class="absolute bottom-[-1px] left-0 w-full h-0.5 bg-theme"></div>' : ""}
                 </button>
@@ -134,14 +138,14 @@ const render = () => {
                 (tile) => `
               <div data-id="${tile.id}" class="tile-item group relative">
                 <div class="tile-link cursor-pointer w-full flex flex-col items-center justify-center aspect-video rounded-xl shadow-lg transition-all duration-300 overflow-hidden border backdrop-blur-md bg-widget hover:scale-105 active:scale-95 ${isDark ? "border-white/10" : "border-black/5"}">
-                  <div class="flex-1 w-full flex items-center justify-center p-[10%] relative">
+                  <div class="flex-1 w-full flex items-center justify-center p-[2%] relative">
                     <!-- Move Handle: Top Left -->
                     <div class="drag-handle absolute top-1 left-1 p-1 text-slate-500 opacity-0 group-hover:opacity-100 cursor-grab hover:text-theme transition-opacity z-20"><i data-lucide="grip-vertical" size="8"></i></div>
                     
                     <!-- Proportional sizing: w-[35%] ensures icons grow/shrink with column count -->
-                    <img src="${tile.imageUrl || getFavicon(tile.url)}" class="w-[35%] aspect-square object-contain drop-shadow-lg transition-transform group-hover:scale-110" />
+                    <img src="${tile.imageUrl || getFavicon(tile.url)}" class="w-[30%] aspect-square object-contain drop-shadow-lg transition-transform group-hover:scale-110" />
                   </div>
-                  <div class="w-full px-4 py-2 border-t text-center truncate font-bold text-[clamp(9px,1vw,12px)] ${isDark ? "bg-white/5 border-white/10 text-slate-200" : "bg-black/5 border-black/5 text-gray-700"}">
+                  <div class="w-full border-t text-center truncate font-bold text-[clamp(12px,1vw,12px)] ${isDark ? "bg-white/5 border-white/10 text-slate-200" : "bg-black/5 border-black/5 text-gray-700"}">
                     ${tile.title}
                   </div>
                 </div>
@@ -163,13 +167,12 @@ const render = () => {
 
         <!-- Right Sidebar -->
         <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
-          <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
-            ${dateStr}
-          </div>
-          <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
-          <div id="calendar-area" class="w-full"></div>
-          ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
-        </aside>
+  <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
+  
+  <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
+  <div id="calendar-area" class="w-full"></div>
+  ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
+</aside>
       </div>
 
       <button id="settings-trigger" class="fixed bottom-8 right-8 z-50 p-4 rounded-xl shadow-2xl transition-all hover:scale-110 active:scale-90 border bg-widget ${isDark ? "border-white/10 text-slate-100 hover:text-theme" : "border-black/5 text-gray-700 hover:text-theme"}">
@@ -188,10 +191,10 @@ const renderNotesWidget = () => {
   const noteText = localStorage.getItem("speeddial_quicknote") || "";
   return `
     <div class="mt-8 p-4 rounded-xl border backdrop-blur-md shadow-xl bg-widget w-full max-w-[260px] ${state.settings.theme === "dark" ? "border-white/10 text-slate-100" : "border-black/5 text-gray-700"}">
-      <div class="flex items-center gap-2 mb-3 opacity-60 text-[10px] font-bold uppercase tracking-widest">
+      <div class="flex items-center gap-2 mb-3 text-[10px] font-bold uppercase tracking-widest">
         <i data-lucide="sticky-note" size="14"></i> Quick Notes
       </div>
-      <textarea id="notes-input" class="w-full h-32 bg-transparent border-none outline-none resize-none text-xs leading-relaxed placeholder:opacity-30" placeholder="Jot something down...">${noteText}</textarea>
+      <textarea id="notes-input" class="w-full h-32 bg-transparent border-none outline-none resize-none text-xs leading-relaxed placeholder:opacity-60" placeholder="Jot something down...">${noteText}</textarea>
     </div>
   `;
 };
@@ -212,13 +215,13 @@ const renderCalendar = () => {
     <div class="p-5 rounded-xl border backdrop-blur-md shadow-xl bg-widget ${isDark ? "border-white/10 text-slate-100" : "border-black/5 text-gray-700"}">
       <div class="flex items-center justify-between mb-4">
         <button id="cal-prev" class="p-1 hover:bg-current/10 rounded-full transition-colors"><i data-lucide="chevron-left" size="16"></i></button>
-        <div class="text-center text-[11px] font-bold uppercase tracking-widest opacity-50">
+        <div class="text-center text-[11px] font-bold uppercase tracking-widest">
           ${viewDate.toLocaleString("default", { month: "long", year: "numeric" })}
         </div>
         <button id="cal-next" class="p-1 hover:bg-current/10 rounded-full transition-colors"><i data-lucide="chevron-right" size="16"></i></button>
       </div>
       <div class="grid grid-cols-7 gap-1 text-[10px] text-center">
-        ${["S", "M", "T", "W", "T", "F", "S"].map((d) => `<div class="font-bold opacity-30">${d}</div>`).join("")}
+        ${["S", "M", "T", "W", "T", "F", "S"].map((d) => `<div class="font-bold ">${d}</div>`).join("")}
         ${Array(firstDay)
           .fill(0)
           .map(() => "<div></div>")
@@ -237,7 +240,7 @@ const renderCalendar = () => {
           })
           .join("")}
       </div>
-      <button id="cal-today" class="w-full mt-4 text-[9px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Today</button>
+      <button id="cal-today" class="w-full mt-4 text-[9px] font-bold uppercase tracking-widest hover:opacity-100 transition-opacity">Today</button>
     </div>
   `;
   createIcons({ icons });
@@ -293,7 +296,7 @@ const fetchWeather = async () => {
 
   const renderWeatherHtml = (r) => {
     if (!r.data)
-      return `<div class="p-4 rounded-xl border bg-widget opacity-50 text-[10px]">Error: ${r.location}</div>`;
+      return `<div class="p-4 rounded-xl border bg-widget text-[10px]">Error: ${r.location}</div>`;
     const temp = Math.round(r.data.temperature_2m);
     const unitSymbol = state.settings.weatherUnit === "imperial" ? "°F" : "°C";
     const isDark = state.settings.theme === "dark";
@@ -302,7 +305,7 @@ const fetchWeather = async () => {
       <div data-lat="${r.lat}" data-lng="${r.lng}" class="weather-widget-card p-4 rounded-xl border backdrop-blur-md shadow-lg bg-widget flex flex-col cursor-pointer hover:ring-2 hover:ring-theme/30 transition-all ${isDark ? "border-white/10 text-slate-100" : "border-black/5 text-gray-700"}">
         <div class="flex items-center justify-between mb-2">
           <div class="overflow-hidden">
-            <div class="text-[9px] font-bold uppercase tracking-widest opacity-50 truncate">${r.location}</div>
+            <div class="text-[14px] font-bold uppercase tracking-widest truncate">${r.location}</div>
             <div class="text-2xl font-black">${temp}${unitSymbol}</div>
           </div>
           <i data-lucide="${r.data.is_day ? "sun" : "moon"}" class="text-theme"></i>
@@ -310,7 +313,7 @@ const fetchWeather = async () => {
         ${
           state.settings.weatherStyle === "detailed"
             ? `
-          <div class="flex items-center justify-between text-[9px] opacity-60 border-t pt-2 mt-1 border-current/10">
+          <div class="flex items-center justify-between text-[9px] border-t pt-2 mt-1 border-current/10">
             <span>Wind: ${Math.round(r.data.wind_speed_10m)}${state.settings.weatherUnit === "imperial" ? "mph" : "km/h"}</span>
             <span>Humid: ${r.data.relative_humidity_2m}%</span>
           </div>
