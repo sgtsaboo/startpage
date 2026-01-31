@@ -174,7 +174,7 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
   ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
       </aside>
 
-  //</div>
+  </div>
   
   <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
   <div id="calendar-area" class="w-full"></div>
