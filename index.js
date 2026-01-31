@@ -10,6 +10,28 @@ const hexToRgb = (hex) => {
     : "0, 0, 0";
 };
 
+const updateLiveClock = () => {
+  state.currentTime = new Date();
+  
+  const clockEl = document.getElementById("live-clock");
+  const dateEl = document.getElementById("live-date");
+
+  if (clockEl) {
+    clockEl.textContent = state.currentTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: !state.settings.timeFormat24h,
+    });
+  }
+
+  if (dateEl) {
+    const weekday = state.currentTime.toLocaleDateString([], { weekday: "long" });
+    const month = state.currentTime.toLocaleDateString([], { month: "long" });
+    const day = state.currentTime.toLocaleDateString([], { day: "numeric" });
+    dateEl.textContent = `${weekday},\n ${month}\n${day}`;
+  }
+};
+
 const getFavicon = (url) =>
   `https://www.google.com/s2/favicons?sz=128&domain=${url}`;
 
@@ -103,10 +125,18 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
       <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-[22%_56%_22%] h-full overflow-hidden">
         
         <!-- Left Sidebar -->
-        <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
-          <div class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
-            ${timeStr}
-          </div>
+//        <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
+//          <div class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
+//            ${timeStr}
+//          </div>
+//          <div id="weather-list-left" class="w-full flex flex-col gap-4"></div>
+//          ${state.settings.showNotes && state.settings.notesPosition === "left" ? renderNotesWidget() : ""}
+//        </aside>
+
+          <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
+            <div id="live-clock" class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
+              ${timeStr}
+            </div>
           <div id="weather-list-left" class="w-full flex flex-col gap-4"></div>
           ${state.settings.showNotes && state.settings.notesPosition === "left" ? renderNotesWidget() : ""}
         </aside>
@@ -166,13 +196,24 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
         </main>
 
         <!-- Right Sidebar -->
+//        <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
+//  <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
+  
+//  <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
+//  <div id="calendar-area" class="w-full"></div>
+//  ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
+//</aside>
+
         <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
-  <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
+          <div id="live-date" class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">
+            ${dateStr}
+  </div>
   
   <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
   <div id="calendar-area" class="w-full"></div>
   ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
 </aside>
+      </div>
       </div>
 
       <button id="settings-trigger" class="fixed bottom-8 right-8 z-50 p-4 rounded-xl shadow-2xl transition-all hover:scale-110 active:scale-90 border bg-widget ${isDark ? "border-white/10 text-slate-100 hover:text-theme" : "border-black/5 text-gray-700 hover:text-theme"}">
@@ -1012,8 +1053,14 @@ const attachSettingsEvents = () => {
 };
 
 // --- Lifecycle ---
-setInterval(() => {
-  state.currentTime = new Date();
-  renderCalendar();
-}, 1000);
+//setInterval(() => {
+ // state.currentTime = new Date();
+ // renderCalendar();
+//}, 1000);
+//render();
+
+// Start the application
 render();
+
+// Update the clock every 1 second (1000ms)
+setInterval(updateLiveClock, 1000);
