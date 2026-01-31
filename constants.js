@@ -10,7 +10,7 @@ export const DEFAULT_SETTINGS = {
   showWeather: true,
   weatherConfigs: [{ id: 'ny-weather', location: 'New York, NY', lat: 40.7128, lng: -74.0060 }],
   showNotes: true,
-  notesPosition: 'left',
+  notesPosition: 'right',
   weatherStyle: 'detailed',
   weatherUnit: 'imperial'
 };
