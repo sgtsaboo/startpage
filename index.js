@@ -1015,5 +1015,5 @@ const attachSettingsEvents = () => {
 setInterval(() => {
   state.currentTime = new Date();
   renderCalendar();
-}, 30000);
+}, 1000);
 render();
