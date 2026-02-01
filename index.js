@@ -109,7 +109,7 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
           </div>
           <div id="weather-list-left" class="w-full flex flex-col gap-4"></div>
           ${state.settings.showNotes && state.settings.notesPosition === "left" ? renderNotesWidget() : ""}
-       </aside>
+        </aside>
 
         <!-- Main Body -->
         <main class="flex flex-col items-center h-full overflow-y-auto no-scrollbar px-6 pt-12 pb-24 z-10">
@@ -172,15 +172,7 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
   <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
   <div id="calendar-area" class="w-full"></div>
   ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
-      </aside>
-
-  </div>
-  
-  <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
-  <div id="calendar-area" class="w-full"></div>
-  ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
 </aside>
-      </div>
       </div>
 
       <button id="settings-trigger" class="fixed bottom-8 right-8 z-50 p-4 rounded-xl shadow-2xl transition-all hover:scale-110 active:scale-90 border bg-widget ${isDark ? "border-white/10 text-slate-100 hover:text-theme" : "border-black/5 text-gray-700 hover:text-theme"}">
@@ -1025,5 +1017,3 @@ setInterval(() => {
   renderCalendar();
 }, 1000);
 render();
-
-
