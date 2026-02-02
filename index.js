@@ -104,8 +104,8 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
         
         <!-- Left Sidebar -->
         <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
-          <div class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
-            ${timeStr}
+          <div id="time-display" class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
+             ${timeStr}
           </div>
           <div id="weather-list-left" class="w-full flex flex-col gap-4"></div>
           ${state.settings.showNotes && state.settings.notesPosition === "left" ? renderNotesWidget() : ""}
@@ -1014,6 +1014,17 @@ const attachSettingsEvents = () => {
 // --- Lifecycle ---
 setInterval(() => {
   state.currentTime = new Date();
+  const timeEl = document.getElementById("time-display");
+  if (timeEl) {
+    timeEl.textContent = state.currentTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: !state.settings.timeFormat24h,
+    });
+  } else {
+    // fallback (e.g. modal open or not yet rendered)
+    render();
+  }
   renderCalendar();
 }, 1000);
 render();
