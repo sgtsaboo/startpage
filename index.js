@@ -1,6 +1,7 @@
 import { createIcons, icons } from "lucide";
 import Sortable from "sortablejs";
 import { DEFAULT_SETTINGS, INITIAL_PAGES, INITIAL_TILES } from "./constants.js";
+import { SEARCH_CONFIG } from "./constants.js";
 
 // --- Utilities ---
 const hexToRgb = (hex) => {
@@ -12,6 +13,88 @@ const hexToRgb = (hex) => {
 
 const getFavicon = (url) =>
   `https://www.google.com/s2/favicons?sz=128&domain=${url}`;
+
+//let _searchInitialized = false;
+
+// Map URL -> engine key (for backwards compatibility)
+const findEngineKeyByUrl = (val) => {
+  if (!val) return null;
+  const keys = Object.keys(SEARCH_CONFIG.engines || {});
+  for (const k of keys) {
+    if (SEARCH_CONFIG.engines[k].url === val) return k;
+  }
+  return null;
+};
+
+let _globalSearchKeyAttached = false;
+
+const initSearch = () => {
+  const searchForm = document.getElementById("search-form");
+  const searchInput = document.getElementById("search-input");
+  const engineSelect = document.getElementById("engine-select");
+  if (!searchForm || !searchInput || !engineSelect) return;
+
+  // Build dropdown options from SEARCH_CONFIG (use keys as values)
+  engineSelect.innerHTML = "";
+  Object.keys(SEARCH_CONFIG.engines).forEach((key) => {
+    const engine = SEARCH_CONFIG.engines[key];
+    const option = document.createElement("option");
+    option.value = key; // use engine key (e.g. "google")
+    option.textContent = engine.name;
+    engineSelect.appendChild(option);
+  });
+
+  // Determine currently saved engine (support both key and legacy URL)
+  const saved = state.settings && state.settings.defaultSearchEngine;
+  const savedIsKey =
+    saved && SEARCH_CONFIG.engines && SEARCH_CONFIG.engines[saved];
+  const savedIsUrl = saved && findEngineKeyByUrl(saved);
+  const selectedKey = savedIsKey
+    ? saved
+    : savedIsUrl
+      ? findEngineKeyByUrl(saved)
+      : SEARCH_CONFIG.defaultEngine;
+  engineSelect.value = selectedKey;
+
+  // Persist default when changed - save engine key into state.settings and persist
+  // (attach to this DOM element instance)
+  engineSelect.addEventListener("change", () => {
+    state.settings.defaultSearchEngine = engineSelect.value; // store key
+    saveState();
+  });
+
+  // Execute search on submit: build URL from selected engine key
+  searchForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const query = searchInput.value.trim();
+    if (!query) return;
+    const key = engineSelect.value;
+    const engine =
+      SEARCH_CONFIG.engines[key] ||
+      SEARCH_CONFIG.engines[SEARCH_CONFIG.defaultEngine];
+    const url =
+      (engine && engine.url) ||
+      SEARCH_CONFIG.engines[SEARCH_CONFIG.defaultEngine].url;
+    window.open(url + encodeURIComponent(query), "_blank");
+    searchInput.value = "";
+  });
+
+  // Attach global '/' key to focus the search input exactly once
+  if (!_globalSearchKeyAttached) {
+    window.addEventListener("keydown", (e) => {
+      if (
+        e.key === "/" &&
+        document.activeElement !== document.getElementById("search-input")
+      ) {
+        // Prevent typing "/" into some other input
+        e.preventDefault();
+        const si = document.getElementById("search-input");
+        if (si) si.focus();
+      }
+    });
+    _globalSearchKeyAttached = true;
+  }
+};
 
 // --- State Management ---
 let state = {
@@ -83,14 +166,14 @@ const render = () => {
     hour12: !state.settings.timeFormat24h,
   });
 
-const date = state.currentTime;
+  const date = state.currentTime;
 
-const weekday = date.toLocaleDateString([], { weekday: "long" });
-const month = date.toLocaleDateString([], { month: "long" });
-const day = date.toLocaleDateString([], { day: "numeric" });
+  const weekday = date.toLocaleDateString([], { weekday: "long" });
+  const month = date.toLocaleDateString([], { month: "long" });
+  const day = date.toLocaleDateString([], { day: "numeric" });
 
-// Join them with new lines
-const dateStr = `${weekday},\n ${month}\n${day}`;
+  // Join them with new lines
+  const dateStr = `${weekday},\n ${month}\n${day}`;
 
   const filteredTiles = state.tiles
     .filter((t) => t.pageId === state.activePageId)
@@ -103,7 +186,7 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
       <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-[22%_56%_22%] h-full overflow-hidden">
         
         <!-- Left Sidebar -->
-        <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
+        <aside class="hidden md:flex flex-col items-center  p-8 overflow-y-auto no-scrollbar z-20">
           <div id="time-display" class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
              ${timeStr}
           </div>
@@ -112,8 +195,26 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
         </aside>
 
         <!-- Main Body -->
-        <main class="flex flex-col items-center h-full overflow-y-auto no-scrollbar px-6 pt-12 pb-24 z-10">
+        <main class="flex flex-col items-center h-full overflow-y-auto no-scrollbar px-6 pb-24 z-10">
+        <div class="flex flex-col items-center justify-center my-6 w-full max-w-2xl mx-auto px-4"> <form id="search-form" class="relative w-full flex items-center bg-gray-800 rounded-xl shadow-2xl border border-gray-700 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all duration-200" > <select id="engine-select" class="bg-gray-700 text-gray-200 text-sm px-4 py-3 rounded-l-xl outline-none border-r border-gray-600 cursor-pointer hover:bg-gray-600 transition"></select>
+        <input
+  type="text"
+  id="search-input"
+  placeholder="Search the web..."
+  class="w-full bg-transparent text-white px-6 py-3 outline-none placeholder-gray-500"
+  autocomplete="off"
+/>
 
+<button
+  type="submit"
+  class="px-6 py-3 text-gray-400 hover:text-white transition"
+>
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+  </svg>
+</button>
+</form> </div>
           <!-- Page Groups (Tabs) -->
           <nav id="group-tabs-nav" class="w-full flex justify-center mb-10">
             <div id="group-tabs-list" class="flex flex-wrap justify-center border-b ${isDark ? "border-slate-800" : "border-gray-200"}">
@@ -166,7 +267,7 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
         </main>
 
         <!-- Right Sidebar -->
-        <aside class="hidden md:flex flex-col items-center pt-16 p-8 overflow-y-auto no-scrollbar z-20">
+        <aside class="hidden md:flex flex-col items-center p-8 overflow-y-auto no-scrollbar z-20">
   <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
   
   <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
@@ -183,6 +284,8 @@ const dateStr = `${weekday},\n ${month}\n${day}`;
 
   createIcons({ icons });
   attachAppEvents();
+  initSearch();
+  // <-- initialize the search elements and listeners
   renderCalendar();
   fetchWeather();
 };
@@ -516,7 +619,6 @@ const openSettings = () => {
                 </div>
               </div>
             </button>
-            </button>
              <button id="s-weather-toggle" class="p-4 rounded-xl border flex flex-col gap-2 transition-all dark:border-slate-800 dark:bg-slate-800/50 hover:border-theme/40">
               <span class="text-[10px] font-bold uppercase opacity-50">Weather</span>
               <div class="flex items-center justify-between w-full">
@@ -534,7 +636,7 @@ const openSettings = () => {
                   <div class="absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all ${state.settings.openInNewTab ? "right-0.5" : "left-0.5"}"></div>
                 </div>
               </div>
-
+            </button>
             <button id="s-notes-pos" class="p-4 rounded-xl border flex flex-col gap-2 transition-all dark:border-slate-800 dark:bg-slate-800/50 hover:border-theme/40">
               <span class="text-[10px] font-bold uppercase opacity-50">Notes</span>
               <div class="flex items-center justify-between w-full">
@@ -625,6 +727,18 @@ const openSettings = () => {
               </div>
               <input type="file" id="s-bg-file" class="hidden" accept="image/*" />
               <div id="bg-preview-box" class="mt-2 w-full aspect-video rounded-lg bg-cover bg-center border border-current/10" style="background-image: ${state.settings.backgroundImage ? `url(${state.settings.backgroundImage})` : "none"}"></div>
+            </div>
+          </div>
+
+          <!-- Search Engine selection -->
+          <div class="space-y-3">
+            <label class="text-[10px] font-bold uppercase opacity-50 flex items-center gap-2">
+              <i data-lucide="search"></i> Default Search Engine
+            </label>
+            <div class="p-3 rounded-xl border dark:border-slate-800 bg-current/5 flex items-center gap-2">
+              <select id="s-default-engine" class="w-full px-3 py-2 rounded-lg border dark:bg-slate-800 dark:border-slate-700 outline-none text-sm">
+                <!-- Options populated via JS -->
+              </select>
             </div>
           </div>
 
@@ -720,6 +834,40 @@ const openSettings = () => {
     </div>
   `;
 
+  // Populate the Default Search Engine select now that the modal is in the DOM
+  const settingsEngineSelect = document.getElementById("s-default-engine");
+  if (settingsEngineSelect) {
+    settingsEngineSelect.innerHTML = "";
+    Object.keys(SEARCH_CONFIG.engines).forEach((key) => {
+      const engine = SEARCH_CONFIG.engines[key];
+      const opt = document.createElement("option");
+      opt.value = key; // store key
+      opt.textContent = engine.name;
+      settingsEngineSelect.appendChild(opt);
+    });
+
+    // Determine saved key (support saved key or legacy saved URL)
+    const saved = state.settings && state.settings.defaultSearchEngine;
+    const savedIsKey =
+      saved && SEARCH_CONFIG.engines && SEARCH_CONFIG.engines[saved];
+    const savedIsUrl = saved && findEngineKeyByUrl(saved);
+    const selectedKey = savedIsKey
+      ? saved
+      : savedIsUrl
+        ? findEngineKeyByUrl(saved)
+        : SEARCH_CONFIG.defaultEngine;
+
+    settingsEngineSelect.value = selectedKey;
+
+    settingsEngineSelect.onchange = (e) => {
+      state.settings.defaultSearchEngine = e.target.value; // store key
+      saveState();
+      // update main engine select if present
+      const mainEngineSelect = document.getElementById("engine-select");
+      if (mainEngineSelect) mainEngineSelect.value = e.target.value;
+    };
+  }
+
   createIcons({ icons });
   attachSettingsEvents();
 };
@@ -767,28 +915,39 @@ const attachSettingsEvents = () => {
 
   const accentPicker = document.getElementById("s-custom-accent");
   const accentHex = document.getElementById("accent-hex-display");
-  accentPicker.oninput = (e) => {
-    const val = e.target.value;
-    state.settings.themeColor = val;
-    accentHex.innerText = val;
-    document.documentElement.style.setProperty("--theme-color", val);
-  };
+  if (accentPicker) {
+    accentPicker.oninput = (e) => {
+      const val = e.target.value;
+      state.settings.themeColor = val;
+      if (accentHex) accentHex.innerText = val;
+      document.documentElement.style.setProperty("--theme-color", val);
+    };
+  }
 
   const bgPicker = document.getElementById("s-custom-bg");
   const bgHex = document.getElementById("bg-hex-display");
-  bgPicker.oninput = (e) => {
-    const val = e.target.value;
-    state.settings.backgroundColor = val;
-    bgHex.innerText = val;
-    document.documentElement.style.setProperty("--bg-color", val);
-    document.documentElement.style.setProperty("--bg-rgb", hexToRgb(val));
-  };
+  if (bgPicker) {
+    bgPicker.oninput = (e) => {
+      const val = e.target.value;
+      state.settings.backgroundColor = val;
+      if (bgHex) bgHex.innerText = val;
+      document.documentElement.style.setProperty("--bg-color", val);
+      document.documentElement.style.setProperty("--bg-rgb", hexToRgb(val));
+    };
+  }
 
   // Background Image Handling
   const bgUrlInput = document.getElementById("s-bg-url");
   if (bgUrlInput) {
     bgUrlInput.oninput = (e) => {
       state.settings.backgroundImage = e.target.value;
+      function updateDateTime() {
+        const now = new Date();
+      }
+
+      // Run every second
+      setInterval(updateDateTime, 1000);
+      updateDateTime(); // Initial call
       const previewBox = document.getElementById("bg-preview-box");
       if (previewBox)
         previewBox.style.backgroundImage = state.settings.backgroundImage
@@ -851,7 +1010,7 @@ const attachSettingsEvents = () => {
       clearTimeout(searchTimer);
       const q = e.target.value;
       if (q.length < 2) {
-        cityResults.classList.add("hidden");
+        if (cityResults) cityResults.classList.add("hidden");
         return;
       }
       searchTimer = setTimeout(async () => {
@@ -860,7 +1019,7 @@ const attachSettingsEvents = () => {
             `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=en&format=json`,
           );
           const data = await res.json();
-          if (data.results) {
+          if (data.results && cityResults) {
             cityResults.innerHTML = data.results
               .map(
                 (loc) => `
@@ -899,14 +1058,22 @@ const attachSettingsEvents = () => {
       }),
   );
 
-  document.getElementById("s-add-group").onclick = () => {
-    state.pages.push({ id: "p" + Date.now(), name: "New Group" });
-    openSettings();
-  };
-  document.getElementById("s-sort-az").onclick = () => {
-    state.pages.sort((a, b) => a.name.localeCompare(b.name));
-    openSettings();
-  };
+  const addGroupBtn = document.getElementById("s-add-group");
+  if (addGroupBtn) {
+    addGroupBtn.onclick = () => {
+      state.pages.push({ id: "p" + Date.now(), name: "New Group" });
+      openSettings();
+    };
+  }
+
+  const sortAzBtn = document.getElementById("s-sort-az");
+  if (sortAzBtn) {
+    sortAzBtn.onclick = () => {
+      state.pages.sort((a, b) => a.name.localeCompare(b.name));
+      openSettings();
+    };
+  }
+
   document.querySelectorAll(".group-del").forEach(
     (b) =>
       (b.onclick = () => {
@@ -919,96 +1086,115 @@ const attachSettingsEvents = () => {
       }),
   );
 
-  document.getElementById("s-export").onclick = () => {
-    const data = JSON.stringify({
-      settings: state.settings,
-      tiles: state.tiles,
-      pages: state.pages,
-    });
-    const blob = new Blob([data], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "speeddial-native-backup.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const exportBtn = document.getElementById("s-export");
+  if (exportBtn) {
+    exportBtn.onclick = () => {
+      const data = JSON.stringify({
+        settings: state.settings,
+        tiles: state.tiles,
+        pages: state.pages,
+      });
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "speeddial-native-backup.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+  }
 
   const fileInput = document.getElementById("import-file");
-  document.getElementById("s-import").onclick = () => {
-    fileInput.dataset.mode = "native";
-    fileInput.click();
-  };
-  document.getElementById("s-import-sd2").onclick = () => {
-    fileInput.dataset.mode = "sd2";
-    fileInput.click();
-  };
+  const importBtn = document.getElementById("s-import");
+  const importSd2Btn = document.getElementById("s-import-sd2");
+  if (importBtn) {
+    importBtn.onclick = () => {
+      if (!fileInput) return;
+      fileInput.dataset.mode = "native";
+      fileInput.click();
+    };
+  }
+  if (importSd2Btn) {
+    importSd2Btn.onclick = () => {
+      if (!fileInput) return;
+      fileInput.dataset.mode = "sd2";
+      fileInput.click();
+    };
+  }
 
-  fileInput.onchange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const json = JSON.parse(event.target.result);
-        if (fileInput.dataset.mode === "sd2") {
-          const sd2Pages = (json.groups || []).map((g) => ({
-            id: String(g.id),
-            name: g.title,
-          }));
-          const sd2Tiles = (json.dials || []).map((d) => ({
-            id: String(d.id || Math.random()),
-            title: d.title,
-            url: d.url,
-            imageUrl: d.thumbnail || "",
-            position: d.position,
-            pageId: String(d.idgroup),
-          }));
-          state.pages = sd2Pages.length ? sd2Pages : state.pages;
-          state.tiles = sd2Tiles.length ? sd2Tiles : state.tiles;
-          state.activePageId = state.pages[0].id;
-        } else {
-          state.settings = json.settings || state.settings;
-          state.tiles = json.tiles || state.tiles;
-          state.pages = json.pages || state.pages;
-          state.activePageId = state.pages[0].id;
+  if (fileInput) {
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const json = JSON.parse(event.target.result);
+          if (fileInput.dataset.mode === "sd2") {
+            const sd2Pages = (json.groups || []).map((g) => ({
+              id: String(g.id),
+              name: g.title,
+            }));
+            const sd2Tiles = (json.dials || []).map((d) => ({
+              id: String(d.id || Math.random()),
+              title: d.title,
+              url: d.url,
+              imageUrl: d.thumbnail || "",
+              position: d.position,
+              pageId: String(d.idgroup),
+            }));
+            state.pages = sd2Pages.length ? sd2Pages : state.pages;
+            state.tiles = sd2Tiles.length ? sd2Tiles : state.tiles;
+            state.activePageId = state.pages[0].id;
+          } else {
+            state.settings = json.settings || state.settings;
+            state.tiles = json.tiles || state.tiles;
+            state.pages = json.pages || state.pages;
+            state.activePageId = state.pages[0].id;
+          }
+          if (saveState()) {
+            modalRoot.innerHTML = "";
+            render();
+          }
+        } catch (err) {
+          alert("Invalid file format.");
         }
-        if (saveState()) {
-          close();
-          render();
-        }
-      } catch (err) {
-        alert("Invalid file format.");
+      };
+      reader.readAsText(file);
+    };
+  }
+
+  const resetBtn = document.getElementById("s-reset");
+  if (resetBtn) {
+    resetBtn.onclick = () => {
+      if (confirm("Reset EVERYTHING to defaults?")) {
+        localStorage.clear();
+        window.location.reload();
       }
     };
-    reader.readAsText(file);
-  };
+  }
 
-  document.getElementById("s-reset").onclick = () => {
-    if (confirm("Reset EVERYTHING to defaults?")) {
-      localStorage.clear();
-      window.location.reload();
-    }
-  };
+  const applyBtn = document.getElementById("s-apply");
+  if (applyBtn) {
+    applyBtn.onclick = () => {
+      const colsInput = document.getElementById("s-cols");
+      if (colsInput) {
+        state.settings.cols = Math.min(
+          12,
+          Math.max(1, parseInt(colsInput.value) || 4),
+        );
+      }
 
-  document.getElementById("s-apply").onclick = () => {
-    const colsInput = document.getElementById("s-cols");
-    if (colsInput) {
-      state.settings.cols = Math.min(
-        12,
-        Math.max(1, parseInt(colsInput.value) || 4),
-      );
-    }
-
-    document.querySelectorAll(".group-edit").forEach((inp) => {
-      const g = state.pages.find((p) => p.id === inp.dataset.groupId);
-      if (g) g.name = inp.value;
-    });
-    // Final check for successful save before closing modal
-    if (saveState()) {
-      close();
-      render();
-    }
-  };
+      document.querySelectorAll(".group-edit").forEach((inp) => {
+        const g = state.pages.find((p) => p.id === inp.dataset.groupId);
+        if (g) g.name = inp.value;
+      });
+      // Final check for successful save before closing modal
+      if (saveState()) {
+        modalRoot.innerHTML = "";
+        render();
+      }
+    };
+  }
 };
 
 // --- Lifecycle ---
