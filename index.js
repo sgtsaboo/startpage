@@ -168,13 +168,13 @@ const render = () => {
 
   const date = state.currentTime;
 
-  const weekday = date.toLocaleDateString([], { weekday: "long" });
+  //const weekday = date.toLocaleDateString([], { weekday: "long" });
   const month = date.toLocaleDateString([], { month: "long" });
   const day = date.toLocaleDateString([], { day: "numeric" });
 
   // Join them with new lines
-  const dateStr = `${weekday},\n ${month}\n${day}`;
-
+  //const dateStr = `${weekday},\n ${month}\n${day}`;
+  const dateStr = `${month} {day}`;
   const filteredTiles = state.tiles
     .filter((t) => t.pageId === state.activePageId)
     .sort((a, b) => a.position - b.position);
