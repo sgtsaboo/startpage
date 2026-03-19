@@ -270,7 +270,7 @@ const render = () => {
         <aside class="hidden md:flex flex-col items-center p-8 overflow-y-auto no-scrollbar z-20">
   <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
   
-  <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
+  //<div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
   <div id="calendar-area" class="w-full"></div>
   ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
 </aside>
@@ -294,10 +294,10 @@ const renderNotesWidget = () => {
   const noteText = localStorage.getItem("speeddial_quicknote") || "";
   return `
     <div class="mt-8 p-4 rounded-xl border backdrop-blur-md shadow-xl bg-widget w-full max-w-[260px] ${state.settings.theme === "dark" ? "border-white/10 text-slate-100" : "border-black/5 text-gray-700"}">
-      <div class="flex items-center gap-2 mb-3 text-[10px] font-bold uppercase tracking-widest">
+      <div class="flex items-center gap-2 mb-3 text-[16px] font-bold uppercase tracking-widest">
         <i data-lucide="sticky-note" size="14"></i> Quick Notes
       </div>
-      <textarea id="notes-input" class="w-full h-32 bg-transparent border-none outline-none resize-none text-xs leading-relaxed placeholder:opacity-60" placeholder="Jot something down...">${noteText}</textarea>
+      <textarea id="notes-input" class="w-full h-32 bg-transparent border-none outline-none resize-none text-base leading-relaxed placeholder:opacity-60" placeholder="Jot something down...">${noteText}</textarea>
     </div>
   `;
 };
