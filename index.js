@@ -187,7 +187,7 @@ const render = () => {
         
         <!-- Left Sidebar -->
         <aside class="hidden md:flex flex-col items-center  p-8 overflow-y-auto no-scrollbar z-20">
-          <div id="time-display" class="text-4xl font-extrabold tracking-tighter tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
+          <div id="time-display" class="text-4xl font-extrabold tracking-wide tabular-nums drop-shadow-sm mb-8 ${isDark ? "text-slate-100" : "text-gray-900"}">
              ${timeStr}
           </div>
           <div id="weather-list-left" class="w-full flex flex-col gap-4"></div>
@@ -268,7 +268,7 @@ const render = () => {
 
         <!-- Right Sidebar -->
         <aside class="hidden md:flex flex-col items-center p-8 overflow-y-auto no-scrollbar z-20">
-  <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
+  <div class="text-4xl font-extrabold tracking-wide text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
   
   <!-- <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div> -->
   <div id="calendar-area" class="w-full"></div>
