@@ -416,7 +416,7 @@ const fetchWeather = async () => {
         ${
           state.settings.weatherStyle === "detailed"
             ? `
-          <div class="flex items-center justify-between text-[9px] border-t pt-2 mt-1 border-current/10">
+          <div class="flex items-center justify-between text-[14px] border-t pt-2 mt-1 border-current/10">
             <span>Wind: ${Math.round(r.data.wind_speed_10m)}${state.settings.weatherUnit === "imperial" ? "mph" : "km/h"}</span>
             <span>Humid: ${r.data.relative_humidity_2m}%</span>
           </div>
