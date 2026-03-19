@@ -270,7 +270,7 @@ const render = () => {
         <aside class="hidden md:flex flex-col items-center p-8 overflow-y-auto no-scrollbar z-20">
   <div class="text-4xl font-extrabold tracking-tighter text-center leading-tight mb-8 whitespace-pre-line ${isDark ? "text-slate-100" : "text-gray-900"}">${dateStr}</div>
   
-  //<div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div>
+  <!-- <div id="weather-list-right" class="w-full flex flex-col gap-4 mb-8"></div> -->
   <div id="calendar-area" class="w-full"></div>
   ${state.settings.showNotes && state.settings.notesPosition === "right" ? renderNotesWidget() : ""}
 </aside>
@@ -323,7 +323,7 @@ const renderCalendar = () => {
         </div>
         <button id="cal-next" class="p-1 hover:bg-current/10 rounded-full transition-colors"><i data-lucide="chevron-right" size="16"></i></button>
       </div>
-      <div class="grid grid-cols-7 gap-1 text-[10px] text-center">
+      <div class="grid grid-cols-7 gap-1 text-[16px] text-center">
         ${["S", "M", "T", "W", "T", "F", "S"].map((d) => `<div class="font-bold ">${d}</div>`).join("")}
         ${Array(firstDay)
           .fill(0)
@@ -343,7 +343,7 @@ const renderCalendar = () => {
           })
           .join("")}
       </div>
-      <button id="cal-today" class="w-full mt-4 text-[9px] font-bold uppercase tracking-widest hover:opacity-100 transition-opacity">Today</button>
+      <button id="cal-today" class="w-full mt-4 text-[12px] font-bold uppercase tracking-widest hover:opacity-100 transition-opacity">Today</button>
     </div>
   `;
   createIcons({ icons });
