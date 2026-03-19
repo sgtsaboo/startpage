@@ -221,7 +221,7 @@ const render = () => {
               ${state.pages
                 .map(
                   (page) => `
-                <button data-page-id="${page.id}" class="group-tab px-4 py-3 text-sm font-bold transition-all relative ${state.activePageId === page.id ? "text-theme" : isDark ? "text-slate-200 hover:text-slate-500" : "text-gray-400 hover:text-gray-800"}">
+                <button data-page-id="${page.id}" class="group-tab px-4 py-3 text-lg font-bold transition-all relative ${state.activePageId === page.id ? "text-theme" : isDark ? "text-slate-200 hover:text-slate-500" : "text-gray-400 hover:text-gray-800"}">
                   ${page.name}
                   ${state.activePageId === page.id ? '<div class="absolute bottom-[-1px] left-0 w-full h-0.5 bg-theme"></div>' : ""}
                 </button>
@@ -246,7 +246,7 @@ const render = () => {
                     <!-- Proportional sizing: w-[35%] ensures icons grow/shrink with column count -->
                     <img src="${tile.imageUrl || getFavicon(tile.url)}" class="w-[30%] aspect-square object-contain drop-shadow-lg transition-transform group-hover:scale-110" />
                   </div>
-                  <div class="w-full border-t text-center truncate font-bold text-[clamp(12px,1vw,12px)] ${isDark ? "bg-white/5 border-white/10 text-slate-200" : "bg-black/5 border-black/5 text-gray-700"}">
+                  <div class="w-full border-t text-center truncate font-bold text-[clamp(16px,1vw,16px)] ${isDark ? "bg-white/5 border-white/10 text-slate-200" : "bg-black/5 border-black/5 text-gray-700"}">
                     ${tile.title}
                   </div>
                 </div>
