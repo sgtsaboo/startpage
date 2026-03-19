@@ -318,7 +318,7 @@ const renderCalendar = () => {
     <div class="p-5 rounded-xl border backdrop-blur-md shadow-xl bg-widget ${isDark ? "border-white/10 text-slate-100" : "border-black/5 text-gray-700"}">
       <div class="flex items-center justify-between mb-4">
         <button id="cal-prev" class="p-1 hover:bg-current/10 rounded-full transition-colors"><i data-lucide="chevron-left" size="16"></i></button>
-        <div class="text-center text-[11px] font-bold uppercase tracking-widest">
+        <div class="text-center text-[16px] font-bold uppercase tracking-widest">
           ${viewDate.toLocaleString("default", { month: "long", year: "numeric" })}
         </div>
         <button id="cal-next" class="p-1 hover:bg-current/10 rounded-full transition-colors"><i data-lucide="chevron-right" size="16"></i></button>
